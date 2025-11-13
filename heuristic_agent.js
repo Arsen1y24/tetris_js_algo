@@ -125,12 +125,12 @@ function getDropPosition(piece, x) {
 // ----------------------
 
 // Select the best move based on heuristic evaluation
-function selectBestMoveBeam(piece, nextPiece, board) {
-    bestMove = beamSearch(piece, 10, board, nextPiece)
+function selectBestMoveBeam(piece, nextPiece, board, beamWidth=5, maxTreeDepth=5) {
+    bestMove = beamSearch(piece, beamWidth, maxTreeDepth, board, nextPiece)
     return bestMove;
 }
 
-function beamSearch(piece, beamWidth, curBoard, nextPiece) {
+function beamSearch(piece, beamWidth, maxTreeDepth, curBoard, nextPiece) {
     // in this piece of ... (js) I didn't manage to nake the heap work;
     // similar problem with separation into files - idk why for this one it works
     // assuming that beamWidth not more than 20, number of insertions (better scores) is not too big
@@ -162,9 +162,8 @@ function beamSearch(piece, beamWidth, curBoard, nextPiece) {
         }
     });
 
-    let repeat = 10;
     let curPieces = [nextPiece];
-    while(--repeat){
+    while(--maxTreeDepth){
         let pq1 = [];
         let minIndex = -1;
         let minMaxElement = Infinity;

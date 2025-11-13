@@ -72,10 +72,11 @@ Additionally, some functions from game.js were rewtitten to handle current board
 
 Here are some results of Beam Search with hy = 10 (Field Height):
 
-repeat = 5,  beamWidth = 5:  13441, peak = 67490  (next one - 54010)
-repeat = 10, beamWidth = 5:  13889, peak = 105330 (next one - 73390)
-repeat = 5,  beamWidth = 10: 14215, peak = 85960  (next one - 77660)
-repeat = 10, beamWidth = 10: 22293, peak = 78460  (next one - 60370)
+maxTreeDepth = 5,  beamWidth = 5:  13441, peak = 67490  (next one - 54010)
+maxTreeDepth = 10, beamWidth = 5:  13889, peak = 105330 (next one - 73390)
+maxTreeDepth = 5,  beamWidth = 10: 14215, peak = 85960  (next one - 77660)
+maxTreeDepth = 10, beamWidth = 10: 22293, peak = 78460  (next one - 60370)
+(maxTreeDepth - max number of layers to simulate; could be less if all the possible options lose at some level)
 
 So the beam width is more important (as was supposed - we don't lose some better cases,
 and the depth of the simulation treee tree doesn't matter that much)

@@ -2,10 +2,6 @@
 // base helper methods
 //-------------------------------------------------------------------------
 
-// import { selectBestMoveBeam } from './beam_search_agent.js';
-// import { selectBestMove } from './heuristic_agent.js';
-
-
 function get(id)        { return document.getElementById(id);  }
 function hide(id)       { get(id).style.visibility = 'hidden'; }
 function show(id)       { get(id).style.visibility = null;     }
@@ -50,7 +46,7 @@ ucanvas = get('upcoming'),
 uctx    = ucanvas.getContext('2d'),
 speed   = { start: 0.6, decrement: 0.005, min: 0.1 }, // how long before piece drops by 1 row (seconds)
 nx      = 10, // width of tetris court (in blocks)
-ny      = 10, // height of tetris court (in blocks)
+ny      = 20, // height of tetris court (in blocks)
 nu      = 5;  // width/height of upcoming preview (in blocks)
 
 //-------------------------------------------------------------------------
@@ -421,7 +417,7 @@ function drawBlock(ctx, x, y, color) {
 //-------------------------------------------------------------------------
 
 function agent() {
-    let bestMove = selectBestMoveBeam(current, next, blocks); // Beam Search
+    let bestMove = selectBestMoveBeam(current, next, blocks, beamWidth=10, maxTreeDepth=10); // Beam Search
    // let bestMove = selectBestMove(current); //Base agent
     if (bestMove) {
         let dropY = getDropPosition(bestMove.piece, bestMove.x);
