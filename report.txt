@@ -1,0 +1,95 @@
+while playing the game myself, I haven't found any bugs
+while playing with the bot:     
+    - it could "jump" over the wall - if the field jhas a pile in the center, 
+    and the block is currently on one side of the pile, agent may put the block on the another side
+    - it builds vertical structures (and couldn't put most of the blocks next to the wall)
+
+mistakes in the code: 
+    - incorrect computing of columns' heights   
+    - in the cell it could be not only 0/1, but also none
+    
+assumed as features: 
+    - you can slide over the block for some time 
+    could be fixed with
+    [
+        +++ const underBlock = occupiedBeam(piece.type, x, y + 1, piece.dir, board);
+        +++ if (underBlock && x !== piece.x) continue;
+        moves.push({piece: {...piece}, x, y, board: newBoard});
+    ]
+    but with such fixes agent doesn't work well (doesn't fill the right and left gaps)
+    so I prefer consistency
+
+    (this time for sliding by my assumption would be needed to strongly connect;
+    in the original tetris I've seen that's possible)
+
+    - when playing with a bot, the game speeds up
+
+After fixing the code, it works
+
+-------
+Here are my attempts to tune the algorithm:
+-------
+
+average score to get with height 10 (number of samples = 50)
+base:                           5011
+1.00 * completeLines:           4574
+1.75 * completeLines:           3218
+0.05 * (maxHeight - minHeight): 4750
+extraHeight = 0.1:              3476
+0.66 * holes:                   4964
+
+Tuning the weights here is not that easy as the code works for a long time - 
+so I've checked the most reasonable ideas. In addition, it may happen that editing some weights or 
+including new features may increase the score, but that can also happen due to some fortunate randomization
+
+As we can notice, the results show that the base model is pretty fine 
+
+
+
+------
+MCTS or Beam Search
+------
+
+MCTS would be much slower in this case
+So the game woud have problems with accuracy and speed
+Beam Search may give not the perfect result, but mistakes won't be too often, 
+so for the game that would be enough
+
+
+------
+Beam Search
+------
+
+At first, I implemented it with some Heap (that was assumed to work)
+but that thing either needed Node.js or some extra inventions that didn't work out for me
+
+So I've considered to make it on the Array (as Beam Width isn't usually large)
+
+As the player can see both the current figure and the next one, I considered to provide both of them to the Beam Search
+and check for all the possible next figures starting on the third one.
+
+Additionally, some functions from game.js were rewtitten to handle current board state as the parameter
+
+Here are some results of Beam Search with hy = 10 (Field Height):
+
+repeat = 5,  beamWidth = 5:  13441, peak = 67490  (next one - 54010)
+repeat = 10, beamWidth = 5:  13889, peak = 105330 (next one - 73390)
+repeat = 5,  beamWidth = 10: 14215, peak = 85960  (next one - 77660)
+repeat = 10, beamWidth = 10: 22293, peak = 78460  (next one - 60370)
+
+So the beam width is more important (as was supposed - we don't lose some better cases,
+and the depth of the simulation treee tree doesn't matter that much)
+
+Tuning the weights here would be even more tough, as each test takes up to 5 minutes
+
+--------
+Conclusions
+--------
+
+Fixed agend and the implemented one with Beam Search both work great on the basic field (10 * 20)
+Comparing best versions of them (best - with the limitation on computation power) on the field (10 * 10)
+got such results:
+Base       agent scores     5000  at the average, 
+BeamSearch agent scores     22300 at the average
+
+What mathes my assumptions (that looking 5-10 steps ahead is much better than only 1)
